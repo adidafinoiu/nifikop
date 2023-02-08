@@ -2826,6 +2826,21 @@ spec:
                               - name
                               type: object
                           type: object
+                        loginIdentityProvidersConfig:
+                          properties:
+                            replaceTemplateConfigMap:
+                              properties:
+                                data:
+                                  type: string
+                                name:
+                                  type: string
+                                namespace:
+                                  type: string
+                              required:
+                              - data
+                              - name
+                              type: object
+                          type: object
                         bootstrapNotificationServicesConfig:
                           properties:
                             replaceConfigMap:
@@ -3093,6 +3108,21 @@ spec:
                         - name
                         type: object
                       replaceTemplateSecretConfig:
+                        properties:
+                          data:
+                            type: string
+                          name:
+                            type: string
+                          namespace:
+                            type: string
+                        required:
+                        - data
+                        - name
+                        type: object
+                    type: object
+                  loginIdentityProvidersConfig:
+                    properties:
+                      replaceTemplateConfigMap:
                         properties:
                           data:
                             type: string

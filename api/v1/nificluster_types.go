@@ -187,6 +187,8 @@ type ReadOnlyConfig struct {
 	LogbackConfig LogbackConfig `json:"logbackConfig,omitempty"`
 	// Authorizer configuration that will be applied to the node.
 	AuthorizerConfig AuthorizerConfig `json:"authorizerConfig,omitempty"`
+	// LoginIdentityProviders configuration that will be applied to the node.
+	LoginIdentityProvidersConfig LoginIdentityProvidersConfig `json:"loginIdentityProvidersConfig,omitempty"`
 	// BootstrapNotificationServices configuration that will be applied to the node.
 	BootstrapNotificationServicesReplaceConfig BootstrapNotificationServicesConfig `json:"bootstrapNotificationServicesConfig,omitempty"`
 }
@@ -197,6 +199,12 @@ type AuthorizerConfig struct {
 	ReplaceTemplateConfigMap *ConfigmapReference `json:"replaceTemplateConfigMap,omitempty"`
 	// a replacement authorizers.xml template configuration that will replace the default template and replaceConfigMap. NOTE: this is a template as seen in authorizers.go.
 	ReplaceTemplateSecretConfig *SecretConfigReference `json:"replaceTemplateSecretConfig,omitempty"`
+}
+
+// Optional configuration for the default login-identity-providers.xml template.
+type LoginIdentityProvidersConfig struct {
+	// A replacement login-identity-providers.xml template configuration that will replace the default template. NOTE: this is a template as seen in login_identity_providers.go.
+	ReplaceTemplateConfigMap *ConfigmapReference `json:"replaceTemplateConfigMap,omitempty"`
 }
 
 // NifiProperties configuration that will be applied to the node.

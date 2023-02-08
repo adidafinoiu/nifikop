@@ -293,18 +293,47 @@ func (r *Reconciler) getStateManagementConfigString(nConfig *v1.NodeConfig, id i
 
 func (r *Reconciler) getLoginIdentityProvidersConfigString(nConfig *v1.NodeConfig, id int32, log zap.Logger) string {
 
+	nodeList := make(map[string]string)
+
+	loginIdentityProvidersTemplate := config.LoginIdentityProvidersTemplate
+	if r.NifiCluster.Status.NodesState[fmt.Sprint(id)].InitClusterNode {
+
+		// Check for secret/configmap overrides. If there aren't any, then use the default template.
+		if r.NifiCluster.Spec.ReadOnlyConfig.LoginIdentityProvidersConfig.ReplaceTemplateConfigMap != nil {
+			conf, err := r.getConfigMap(context.TODO(), *r.NifiCluster.Spec.ReadOnlyConfig.LoginIdentityProvidersConfig.ReplaceTemplateConfigMap)
+			if err == nil {
+				loginIdentityProvidersTemplate = conf
+			}
+			log.Error("error occurred during getting login replace template readonly configmap",
+				zap.String("clusterName", r.NifiCluster.Name),
+				zap.Int32("nodeId", id),
+				zap.Error(err))
+		}
+
+		for nId, nodeState := range r.NifiCluster.Status.NodesState {
+			if nodeState.InitClusterNode {
+				nodeList[nId] = utilpki.GetNodeUserName(r.NifiCluster, util.ConvertStringToInt32(nId))
+			}
+		}
+	}
+
 	var out bytes.Buffer
-	t := template.Must(template.New("nConfig-config").Parse(config.LoginIdentityProvidersTemplate))
+	t := template.Must(template.New("nConfig-config").Parse(loginIdentityProvidersTemplate))
+
 	if err := t.Execute(&out, map[string]interface{}{
-		"NifiCluster":       r.NifiCluster,
-		"Id":                id,
-		"LdapConfiguration": r.NifiCluster.Spec.LdapConfiguration,
+		"NifiCluster":    r.NifiCluster,
+		"Id":             id,
+		"ClusterName":    r.NifiCluster.Name,
+		"Namespace":      r.NifiCluster.Namespace,
+		"NodeList":       nodeList,
+		"ControllerUser": r.NifiCluster.GetNifiControllerUserIdentity(),
 	}); err != nil {
 		log.Error("error occurred during parsing the config template",
 			zap.String("clusterName", r.NifiCluster.Name),
 			zap.Int32("nodeId", id),
 			zap.Error(err))
 	}
+
 	return out.String()
 }
 
@@ -492,17 +521,6 @@ func (r *Reconciler) getAuthorizersConfigString(nConfig *v1.NodeConfig, id int32
 
 	var out bytes.Buffer
 	t := template.Must(template.New("nConfig-config").Parse(authorizersTemplate))
-
-	/*nifiControllerName := fmt.Sprintf(
-		pkicommon.NodeControllerFQDNTemplate,
-		r.NifiCluster.GetNifiControllerUserIdentity(),
-		r.NifiCluster.Namespace,
-		r.NifiCluster.Spec.ListenersConfig.GetClusterDomain(),
-	)
-
-	if r.NifiCluster.Spec.ControllerUserIdentity != nil {
-		nifiControllerName = *r.NifiCluster.Spec.ControllerUserIdentity
-	}*/
 
 	if err := t.Execute(&out, map[string]interface{}{
 		"NifiCluster":    r.NifiCluster,
