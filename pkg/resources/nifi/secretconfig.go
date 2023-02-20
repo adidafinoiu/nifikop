@@ -321,12 +321,9 @@ func (r *Reconciler) getLoginIdentityProvidersConfigString(nConfig *v1.NodeConfi
 	t := template.Must(template.New("nConfig-config").Parse(loginIdentityProvidersTemplate))
 
 	if err := t.Execute(&out, map[string]interface{}{
-		"NifiCluster":    r.NifiCluster,
-		"Id":             id,
-		"ClusterName":    r.NifiCluster.Name,
-		"Namespace":      r.NifiCluster.Namespace,
-		"NodeList":       nodeList,
-		"ControllerUser": r.NifiCluster.GetNifiControllerUserIdentity(),
+		"NifiCluster":       r.NifiCluster,
+		"Id":                id,
+		"LdapConfiguration": r.NifiCluster.Spec.LdapConfiguration,
 	}); err != nil {
 		log.Error("error occurred during parsing the config template",
 			zap.String("clusterName", r.NifiCluster.Name),
