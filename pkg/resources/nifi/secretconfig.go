@@ -310,6 +310,18 @@ func (r *Reconciler) getLoginIdentityProvidersConfigString(nConfig *v1.NodeConfi
 				zap.Error(err))
 		}
 
+		// The secret takes precedence over the ConfigMap, if it exists.
+		if r.NifiCluster.Spec.ReadOnlyConfig.LoginIdentityProvidersConfig.ReplaceTemplateSecretConfig != nil {
+			conf, err := r.getSecrectConfig(context.TODO(), *r.NifiCluster.Spec.ReadOnlyConfig.LoginIdentityProvidersConfig.ReplaceTemplateSecretConfig)
+			if err == nil {
+				loginIdentityProvidersTemplate = conf
+			}
+			log.Error("error occurred during getting login replace template readonly secret config",
+				zap.String("clusterName", r.NifiCluster.Name),
+				zap.Int32("nodeId", id),
+				zap.Error(err))
+		}
+
 		for nId, nodeState := range r.NifiCluster.Status.NodesState {
 			if nodeState.InitClusterNode {
 				nodeList[nId] = utilpki.GetNodeUserName(r.NifiCluster, util.ConvertStringToInt32(nId))

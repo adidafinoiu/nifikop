@@ -48,6 +48,24 @@ readOnlyConfig:
       name: raw
       # Namespace where is located the secret that we want to refer.
       namespace: nifikop
+  # Login identity providers configuration that will be applied to the node.
+  loginIdentityProvidersConfig:
+    # A login-identity-providers.xml configuration template that will replace the default template seen in login_identity_providers.go
+    replaceTemplateConfigMap:
+      # The key of the value, in data content, that we want use.
+      data: login-identity-providers.xml
+      # Name of the configmap that we want to refer.
+      name: raw
+      # Namespace where is located the secret that we want to refer.
+      namespace: nifikop
+    # A login-identity-providers.xml configuration template that will replace the default template seen in login_identity_providers.go and the replaceTemplateConfigMap
+    replaceTemplateSecretConfig:
+      # The key of the value,in data content, that we want use.
+      data: login-identity-providers.xml
+      # Name of the configmap that we want to refer.
+      name: raw
+      # Namespace where is located the secret that we want to refer.
+      namespace: nifikop
   # NifiProperties configuration that will be applied to the node.
   nifiProperties:
     # Additionnals nifi.properties configuration that will override the one produced based on template and

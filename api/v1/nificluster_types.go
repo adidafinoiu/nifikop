@@ -205,6 +205,8 @@ type AuthorizerConfig struct {
 type LoginIdentityProvidersConfig struct {
 	// A replacement login-identity-providers.xml template configuration that will replace the default template. NOTE: this is a template as seen in login_identity_providers.go.
 	ReplaceTemplateConfigMap *ConfigmapReference `json:"replaceTemplateConfigMap,omitempty"`
+	// A replacement login-identity-providers.xml template configuration that will replace the default template and replaceConfigMap. NOTE: this is a template as seen in login_identity_providers.go.
+	ReplaceTemplateSecretConfig *SecretConfigReference `json:"replaceTemplateSecretConfig,omitempty"`
 }
 
 // NifiProperties configuration that will be applied to the node.
